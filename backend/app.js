@@ -7,10 +7,16 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-    origin: ['https://auth-vedapp.netlify.app','http://localhost:5173'], // Frontend URL
+    origin: ['https://contact-vault-kappa.vercel.app','http://localhost:5173'], // Frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // Allow cookies to be sent  
      
 }));
+
+/* test route */
+app.get("/", (req, res) => {
+  res.send("Backend is running");
+});
 // Import user routes
 const userRoutes = require('./src/router/user.route');
 const authRoutes = require('./src/router/post.router');
