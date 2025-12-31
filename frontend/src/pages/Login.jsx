@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import api from "../services/axios";
 
 function Login() {
   const navigate = useNavigate(); // ✅ ADD
@@ -22,8 +23,8 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/users/login",
+      const response = await api.post(
+        "/api/users/login",
         formdata,
         {
           headers: {

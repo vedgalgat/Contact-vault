@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import api from "../services/axios";
 
 import { Link } from "react-router-dom";
 import { toast } from 'react-toastify';
@@ -23,8 +24,8 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/users/register",
+      const response = await api.post(
+        "/api/users/register",
         formdata,
         {
           headers: {

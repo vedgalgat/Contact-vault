@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { ContactContext } from "../context/ContactContext";
-
+ import api from "../services/axios";
 const ContactList = () => {
   const context = useContext(ContactContext);
 
@@ -19,8 +19,8 @@ const ContactList = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(
-          "http://localhost:3000/api/contacts",
+        const res = await api.get(
+          "/api/contacts",
           {
             headers: {
               Authorization: `Bearer ${token}`,

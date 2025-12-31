@@ -4,6 +4,7 @@ import { ContactContext } from "../context/ContactContext";
 import { toast } from "react-toastify";
 import React from "react";
 import axios from "axios";
+import api from "../services/axios";
 
 const AddContact = () => {
   const { data, setData } = useContext(ContactContext);
@@ -25,8 +26,8 @@ const AddContact = () => {
   const submit = async (formData) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:3000/api/contacts/",
+      const res = await api.post(
+        "/api/contacts/",
         formData,
         {
           headers: {
