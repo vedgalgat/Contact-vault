@@ -43,8 +43,8 @@ const ContactList = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(
-        `http://localhost:3000/api/contacts/${contact._id}`,
+      await api.delete(
+        `api/contacts/${contact._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,8 +77,8 @@ const ContactList = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.put(
-        `http://localhost:3000/api/contacts/${contact._id}`,
+      const res = await api.put(
+        `api/contacts/${contact._id}`,
         { name, email, mobile },
         {
           headers: {
