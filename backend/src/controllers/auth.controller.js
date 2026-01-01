@@ -3,64 +3,29 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const sendMail = require("../controllers/mail.controller")
 
-
 async function registerUser(req, res) {
   try {
-    const { name, password, email } = req.body;
+    console.log("STEP 1: request aayi");
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields required" });
-    }
+    const { name, email, password } = req.body;
 
-    const userExists = await UserModel.findOne({
-      $or: [{ email }, { name }],
-    });
+    console.log("STEP 2: body mila", name, email);
 
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await UserModel.create({
+    const user = await UserModel.create({
       name,
       email,
-      password: hashedPassword,
+      password: "test123"
     });
 
-    // 🔐 JWT SAFE CHECK
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET missing");
-    }
+    console.log("STEP 3: user created", user._id);
 
-    const token = jwt.sign(
-      { id: newUser._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
+    return res.status(201).json({
+      message: "TEST OK",
     });
 
-    // ✅ RESPONSE FIRST
-    res.status(201).json({
-      message: "User registered successfully",
-      user: newUser,
-      token,
-    });
-
-    // 📧 MAIL (NON BLOCKING)
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      sendMail(email, name).catch(err =>
-        console.error("Mail error:", err.message)
-      );
-    }
-
-  } catch (error) {
-    console.error("REGISTER ERROR 👉", error.message);
-    return res.status(500).json({ message: "Internal Server Error" });
+  } catch (err) {
+    console.error("❌ ERROR:", err);
+    return res.status(500).json({ message: "ERROR" });
   }
 }
 
