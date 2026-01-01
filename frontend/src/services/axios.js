@@ -2,6 +2,7 @@
 
   const api = axios.create({
     baseURL: "https://contact-vault-ek24.onrender.com",
+    timeout: 15000,
   });
 
   api.interceptors.request.use((config) => {

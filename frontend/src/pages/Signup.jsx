@@ -12,6 +12,8 @@ function Signup() {
     password: "",
     email: "",
   });
+  const [loading, setLoading] = useState(false);
+
 
   const handleChange = (e) => {
     setformdata({
@@ -22,6 +24,8 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
+    setLoading(true);
 
     try {
       const response = await api.post(
@@ -105,13 +109,19 @@ function Signup() {
               className="w-full px-4 py-2 bg-gray-800 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <button
             type="submit"
-            className="w-full py-3 bg-blue-500 hover:bg-yellow-300 hover:text-black rounded-lg font-semibold text-white transition duration-400"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg font-semibold transition duration-400
+    ${loading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-yellow-300 hover:text-black text-white"}
+  `}
           >
-            Sign Up
+            {loading ? "Please wait..." : "Sign Up"}
           </button>
+
+
         </form>
 
         <p className="text-center text-base text-gray-400 mt-4">
