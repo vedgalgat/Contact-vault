@@ -8,19 +8,30 @@ async function registerUser(req, res) {
   try {
     const { name, password, email } = req.body;
 
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
     const userExists = await UserModel.findOne({
-      $or: [{ name }, { email }]
+      $or: [{ email }, { name }],
     });
 
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await UserModel.create({
       name,
       email,
-      password: await bcrypt.hash(password, 10),
+      password: hashedPassword,
     });
+
+    // 🔐 JWT SAFE CHECK
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET missing");
+    }
 
     const token = jwt.sign(
       { id: newUser._id },
@@ -33,21 +44,23 @@ async function registerUser(req, res) {
       sameSite: "lax",
     });
 
-    // 🔥 RESPONSE FIRST (THIS FIXES EVERYTHING)
+    // ✅ RESPONSE FIRST
     res.status(201).json({
       message: "User registered successfully",
       user: newUser,
       token,
     });
 
-    // 🔥 MAIL AFTER RESPONSE (NON-BLOCKING)
-    sendMail(email, name)
-      .then(() => console.log("Mail sent"))
-      .catch(err => console.log("Mail error:", err.message));
+    // 📧 MAIL (NON BLOCKING)
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      sendMail(email, name).catch(err =>
+        console.error("Mail error:", err.message)
+      );
+    }
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("REGISTER ERROR 👉", error.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
