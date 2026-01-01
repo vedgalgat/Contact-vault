@@ -1,69 +1,35 @@
-const UserModel = require("../models/user.model")
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs")
-const sendMail = require("../controllers/mail.controller")
+const UserModel = require("../models/user.model");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const sendMail = require("../controllers/mail.controller");
+
+/* ================= REGISTER ================= */
 async function registerUser(req, res) {
   try {
     const { name, email, password } = req.body;
 
+    // 1️⃣ Basic validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 2️⃣ Check existing user
     const exists = await UserModel.findOne({ email });
     if (exists) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    // 3️⃣ Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 4️⃣ Create user
     const user = await UserModel.create({
       name,
       email,
-      password: hashed
+      password: hashedPassword,
     });
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax"
-    });
-
-    // 🔥 RESPONSE FIRST
-    res.status(201).json({
-      message: "Signup successful",
-      token,
-      user
-    });
-
-    // 🔥 EMAIL AFTER RESPONSE
-    sendMail(email, name)
-      .catch(err => console.log("Mail error:", err.message));
-
-  } catch (err) {
-    console.error("REGISTER ERROR:", err.message);
-    res.status(500).json({ message: "Server error" });
-  }
-}
-async function loginUser(req, res) {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password required" });
-    }
-
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
+    // 5️⃣ JWT
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET missing");
     }
@@ -74,16 +40,72 @@ async function loginUser(req, res) {
       { expiresIn: "7d" }
     );
 
+    // 6️⃣ Set cookie
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production"
+      secure: process.env.NODE_ENV === "production",
     });
 
+    // 7️⃣ RESPONSE IMMEDIATELY ✅
+    res.status(201).json({
+      message: "Signup successful",
+      token,
+      user,
+    });
+
+    // 8️⃣ EMAIL ASYNC (no await)
+    sendMail(email, name)
+      .then(() => console.log("Mail sent"))
+      .catch(err => console.log("Mail error:", err.message));
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
+/* ================= LOGIN ================= */
+async function loginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+
+    // 1️⃣ Validation
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+
+    // 2️⃣ Find user
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // 3️⃣ Compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // 4️⃣ JWT
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // 5️⃣ Cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    // 6️⃣ Response
     return res.status(200).json({
       message: "User logged in successfully",
       token,
-      user
+      user,
     });
 
   } catch (err) {
@@ -92,5 +114,4 @@ async function loginUser(req, res) {
   }
 }
 
-
-module.exports = { registerUser, loginUser }
+module.exports = { registerUser, loginUser };
