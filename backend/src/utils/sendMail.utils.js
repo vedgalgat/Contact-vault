@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const sendEmail = async ({ to, subject, html }) => {
   try {
     await resend.emails.send({
-      from: "Contact Vault <vedrajput1122@gmai.com>",
+      from: "Contact Vault <vedrajput1122@gmail.com>",
       to,
       subject,
       html,
