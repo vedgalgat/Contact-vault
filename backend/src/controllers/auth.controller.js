@@ -47,16 +47,9 @@ async function registerUser(req, res) {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
+        // 8️⃣ SEND WELCOME EMAIL   
 
-    // 7️⃣ RESPONSE IMMEDIATELY ✅
-    res.status(201).json({
-      message: "Signup successful",
-      token,
-      user,
-    });
-    // 8️⃣ SEND WELCOME EMAIL   
-
-    await sendEmail({
+   sendEmail({
       to: email,
       subject: "Welcome to Contact Vault 🎉",
       html: `
@@ -65,6 +58,14 @@ async function registerUser(req, res) {
       <p>Start saving your contacts securely 🔐</p>
     `,
     });
+
+    // 7️⃣ RESPONSE IMMEDIATELY ✅
+    res.status(201).json({
+      message: "Signup successful",
+      token,
+      user,
+    });
+
 
   } catch (err) {
     console.error("REGISTER ERROR:", err.message);
