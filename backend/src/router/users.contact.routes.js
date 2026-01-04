@@ -3,7 +3,7 @@ const router = express.Router();
 const Contact = require("../models/contact.model");
 const authenticateUser = require("../middlewares/auth.middleware");
 
-// ADD CONTACT
+
 router.post("/", authenticateUser, async (req, res) => {
   const { name, email, mobile } = req.body;
 
