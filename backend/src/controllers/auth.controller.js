@@ -1,7 +1,8 @@
 const UserModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const sendMail = require("../controllers/mail.controller");
+
+const sendEmail = require("../utils/sendMail.utils.js");
 
 /* ================= REGISTER ================= */
 async function registerUser(req, res) {
@@ -53,11 +54,17 @@ async function registerUser(req, res) {
       token,
       user,
     });
+    // 8️⃣ SEND WELCOME EMAIL   
 
-    // 8️⃣ EMAIL ASYNC (no await)
-    sendMail(email, name)
-      .then(() => console.log("Mail sent"))
-      .catch(err => console.log("Mail error:", err.message));
+    await sendEmail({
+      to: email,
+      subject: "Welcome to Contact Vault 🎉",
+      html: `
+      <h2>Hello ${name} 👋</h2>
+      <p>Your account has been created successfully.</p>
+      <p>Start saving your contacts securely 🔐</p>
+    `,
+    });
 
   } catch (err) {
     console.error("REGISTER ERROR:", err.message);
