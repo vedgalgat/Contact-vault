@@ -38,7 +38,7 @@ function Signup() {
         }
       );
 
-      toast.success("Signup Successful ||Mail Sent 🎉", {
+      toast.success("Signup Successfully", {
         style: {
           background: "black",
           color: "red"
@@ -111,12 +111,13 @@ function Signup() {
           </div>
           <button
             type="submit"
-            
-            className={`w-full py-3 rounded-lg font-semibold transition duration-400`}
-    
+            className="w-full py-3 rounded-lg font-semibold transition duration-300 
+             bg-blue-600 text-white hover:bg-blue-700 
+             focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
           >
-  
+            Signup
           </button>
+
 
 
         </form>
