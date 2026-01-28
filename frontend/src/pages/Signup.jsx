@@ -111,14 +111,11 @@ function Signup() {
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full py-3 rounded-lg font-semibold transition duration-400
-    ${loading
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-yellow-300 hover:text-black text-white"}
-  `}
+            
+            className={`w-full py-3 rounded-lg font-semibold transition duration-400`}
+    
           >
-            {loading ? "Please wait..." : "Sign Up"}
+  
           </button>
 
 
