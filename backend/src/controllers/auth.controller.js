@@ -2,7 +2,6 @@ const UserModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-const sendEmail = require("../utils/sendMail.utils.js");
 
 /* ================= REGISTER ================= */
 async function registerUser(req, res) {
