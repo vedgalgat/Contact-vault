@@ -47,17 +47,8 @@ async function registerUser(req, res) {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });
-        // 8️⃣ SEND WELCOME EMAIL   
-
-   sendEmail({
-      to: email,
-      subject: "Welcome to Contact Vault 🎉",
-      html: `
-      <h2>Hello ${name} 👋</h2>
-      <p>Your account has been created successfully.</p>
-      <p>Start saving your contacts securely 🔐</p>
-    `,
-    });
+  
+  
 
     // 7️⃣ RESPONSE IMMEDIATELY ✅
     res.status(201).json({
